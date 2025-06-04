@@ -1,0 +1,1 @@
+web: python fortecai_bot.py
