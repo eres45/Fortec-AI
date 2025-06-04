@@ -121,8 +121,20 @@ def main() -> None:
     # Add message handler
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # Run the bot until the user presses Ctrl-C
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    # Get port from environment variable or use default
+    PORT = int(os.environ.get('PORT', 8443))
+    
+    # Set up webhook instead of polling
+    # This is required for Render deployment to avoid the conflict error
+    WEBHOOK_URL = os.environ.get('WEBHOOK_URL', f"https://fortecai.onrender.com/{TELEGRAM_TOKEN}")
+    
+    # Start the webhook
+    application.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path=TELEGRAM_TOKEN,
+        webhook_url=WEBHOOK_URL
+    )
 
 if __name__ == "__main__":
     main()
