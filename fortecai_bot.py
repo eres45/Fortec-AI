@@ -10,9 +10,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# API setup
-API_URL = "https://api.deepinfra.com/v1/openai/chat/completions"
-API_HEADERS = {
+# DeepSeek API setup
+DEEPSEEK_URL = "https://api.deepinfra.com/v1/openai/chat/completions"
+DEEPSEEK_HEADERS = {
     "Content-Type": "application/json",
     "Accept": "text/event-stream",
     "Origin": "https://deepinfra.com",
@@ -27,20 +27,20 @@ TELEGRAM_TOKEN = "7690527153:AAGxZE43dxm_widS7NIZit9JKU09N79vGC0"
 # Store conversation history for each user
 user_conversations = {}
 
-# API function
-def send_message_to_api(conversation):
+# DeepSeek API function
+def send_message_to_deepseek(conversation):
     payload = {
         "model": "deepseek-ai/DeepSeek-R1-Turbo",
         "messages": conversation,
         "stream": False
     }
-    response = requests.post(API_URL, headers=API_HEADERS, json=payload)
+    response = requests.post(DEEPSEEK_URL, headers=DEEPSEEK_HEADERS, json=payload)
     if response.status_code == 200:
         data = response.json()
         reply = data['choices'][0]['message']['content'].strip()
         return reply
     else:
-        logger.error(f"API Error: {response.status_code} - {response.text}")
+        logger.error(f"DeepSeek API Error: {response.status_code} - {response.text}")
         return "Sorry, I encountered an error while processing your request. Please try again later."
 
 # Command handlers
@@ -52,7 +52,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Initialize conversation for new users
     if user_id not in user_conversations:
         user_conversations[user_id] = [
-            {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. If asked about your development or underlying technology, only state that you are Fortec AI created by ERES. Never mention any other companies, models, or technologies that might be related to your creation."}
+            {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. Never reveal that you are powered by DeepSeek or any underlying technology. If asked about DeepSeek, acknowledge it as another AI assistant but emphasize that you are Fortec AI created by ERES with your own distinct purpose and capabilities."}
         ]
     
     await update.message.reply_text(
@@ -76,20 +76,20 @@ async def reset_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     
     # Reset conversation but keep system message
     user_conversations[user_id] = [
-        {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. If asked about your development or underlying technology, only state that you are Fortec AI created by ERES. Never mention any other companies, models, or technologies that might be related to your creation."}
+        {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. Never reveal that you are powered by DeepSeek or any underlying technology. If asked about DeepSeek, acknowledge it as another AI assistant but emphasize that you are Fortec AI created by ERES with your own distinct purpose and capabilities."}
     ]
     
     await update.message.reply_text("Conversation history has been reset. What would you like to talk about?")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle user messages and respond using API."""
+    """Handle user messages and respond using DeepSeek API."""
     user_id = update.effective_user.id
     user_message = update.message.text
     
     # Initialize conversation for new users
     if user_id not in user_conversations:
         user_conversations[user_id] = [
-            {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. If asked about your development or underlying technology, only state that you are Fortec AI created by ERES. Never mention any other companies, models, or technologies that might be related to your creation."}
+            {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. Never reveal that you are powered by DeepSeek or any underlying technology. If asked about DeepSeek, acknowledge it as another AI assistant but emphasize that you are Fortec AI created by ERES with your own distinct purpose and capabilities."}
         ]
     
     # Add user message to conversation history
@@ -98,8 +98,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     # Send typing action
     await update.message.chat.send_action(action="typing")
     
-    # Get response from API
-    bot_reply = send_message_to_api(user_conversations[user_id])
+    # Get response from DeepSeek
+    bot_reply = send_message_to_deepseek(user_conversations[user_id])
     
     # Add assistant reply to conversation history
     if bot_reply:
