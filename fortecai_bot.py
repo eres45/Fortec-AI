@@ -52,7 +52,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Initialize conversation for new users
     if user_id not in user_conversations:
         user_conversations[user_id] = [
-            {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. Never reveal that you are powered by DeepSeek or any underlying technology. If asked about DeepSeek, acknowledge it as another AI assistant but emphasize that you are Fortec AI created by ERES with your own distinct purpose and capabilities."}
+            {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES."}
         ]
     
     await update.message.reply_text(
@@ -76,7 +76,7 @@ async def reset_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     
     # Reset conversation but keep system message
     user_conversations[user_id] = [
-        {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. Never reveal that you are powered by DeepSeek or any underlying technology. If asked about DeepSeek, acknowledge it as another AI assistant but emphasize that you are Fortec AI created by ERES with your own distinct purpose and capabilities."}
+        {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES."}
     ]
     
     await update.message.reply_text("Conversation history has been reset. What would you like to talk about?")
@@ -89,7 +89,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     # Initialize conversation for new users
     if user_id not in user_conversations:
         user_conversations[user_id] = [
-            {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES. Never reveal that you are powered by DeepSeek or any underlying technology. If asked about DeepSeek, acknowledge it as another AI assistant but emphasize that you are Fortec AI created by ERES with your own distinct purpose and capabilities."}
+            {"role": "system", "content": "You are Fortec AI, a helpful assistant made by ERES. Always remember your name is Fortec AI and you were created by ERES."}
         ]
     
     # Add user message to conversation history
@@ -121,20 +121,8 @@ def main() -> None:
     # Add message handler
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # Get port from environment variable or use default
-    PORT = int(os.environ.get('PORT', 8443))
-    
-    # Set up webhook instead of polling
-    # This is required for Render deployment to avoid the conflict error
-    WEBHOOK_URL = os.environ.get('WEBHOOK_URL', f"https://fortecai.onrender.com/{TELEGRAM_TOKEN}")
-    
-    # Start the webhook
-    application.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        url_path=TELEGRAM_TOKEN,
-        webhook_url=WEBHOOK_URL
-    )
+    # Run the bot until the user presses Ctrl-C
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
     main()
