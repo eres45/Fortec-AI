@@ -205,7 +205,11 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
             "/reset - Reset our conversation history\n"
             "/about - Learn about Fortec AI and its creator\n"
             "/image - Generate an image (e.g., /image a futuristic city at night)\n\n"
-            "You can also ask me to generate images by using phrases like 'create image', 'generate picture', etc.\n\n"
+            "You can also ask me to generate images by using phrases like:\n"
+            "• 'create image of...'\n"
+            "• 'generate picture of...'\n"
+            "• 'draw...'\n"
+            "• 'show me...'\n\n"
             "Just send me a message and I'll respond!"
         )
     except Exception as e:
@@ -272,7 +276,8 @@ async def image_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
                     await update.message.reply_photo(url)
                 except BadRequest as e:
                     logger.error(f"Failed to send image: {e}")
-                    await update.message.reply_text(f"Image URL: {url}\n\nSorry, I couldn't send the image directly. You can view it by clicking the link.")
+                    # Just send the URL without the error message
+                    await update.message.reply_text(f"`{url}`")
         else:
             # Send error message
             await update.message.reply_text("❌ Sorry, I couldn't generate an image. Please try again with a different description.")
@@ -362,7 +367,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                         await update.message.reply_photo(url)
                     except BadRequest as e:
                         logger.error(f"Failed to send image: {e}")
-                        await update.message.reply_text(f"Image URL: {url}\n\nSorry, I couldn't send the image directly. You can view it by clicking the link.")
+                        # Just send the URL without the error message
+                        await update.message.reply_text(f"`{url}`")
             else:
                 # Send error message
                 await update.message.reply_text("❌ Sorry, I couldn't generate an image. Please try again with a different description.")
